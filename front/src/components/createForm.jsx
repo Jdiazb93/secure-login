@@ -1,71 +1,80 @@
 import React, { useState } from "react";
-import { createUser } from '../api/users'
+import { useNavigate } from 'react-router-dom'
+import { createRelatedUser } from '../api/users'
 import { toast } from 'react-toastify'
 
 export const CreateForm = ({ setFetch }) => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        secondName: '',
-        lastName: '',
+        name: '',
+        surName: '',
         email: '',
-        password: '',
-        repeatPassword: '',
-        rutOrPassport: ''
+        position: ''
     })
+    const navigate = useNavigate()
 
+    /**
+     * Función que ejecuta lógica luego de enviar el formulario.
+     */
     const handleSubmit = async (e) => {
+        //Se previene el refrescado por defecto.
         e.preventDefault()
-        const newUser = await createUser(formData);
+        //Se obtienee el token
+        const token = localStorage.getItem('token')
+        //Se hace petición mediante fetch
+        const newUser = await createRelatedUser(formData, token);
+        //Si existe un error, entregará un toast de error.
         if(newUser.status !== 200) toast.error('Algo salió mal, inténtalo nuevamente!.')
+        /**
+         * Si el token está vencido, será removido de la memoria local.
+         * Además, se redireccionará al login para volver a iniciar sesión.
+         * El token tiene una duración de 5 minutos.
+         */
+        if(newUser.status !== 200 && !newUser.tokenStatus) {
+            localStorage.removeItem('token')
+            toast.error('El token ha vencido.')
+            navigate('/')
+            navigate(0)
+        }
+
+        /**
+         * Si todo va bien, el formulario se resetea y se muestra un toast de success.
+         * Además se actualiza un estado global, que refrescará el listado de usuarios.
+         */
         if(newUser.status === 200) {
             setFormData({
-                firstName: '',
-                secondName: '',
-                lastName: '',
+                name: '',
+                surName: '',
                 email: '',
-                password: '',
-                repeatPassword: '',
-                rutOrPassport: ''
+                position: ''
             })
             toast.success('Usuario creado con éxito!.')
             setFetch(true)
         }
     }
 
-    const disabled = !formData.email || !formData.firstName || !formData.lastName || !formData.password || !formData.repeatPassword || !formData.rutOrPassport || formData.password !== formData.repeatPassword
+    //Se valida si los datos mínimos requeridos existen o no, para habilitar el botón de submit y prevenir errores.
+    const disabled = !formData.name || !formData.surName || !formData.email
 
     return (
         <form onSubmit={handleSubmit}>
-            <label>Correo</label>
-            <input placeholder="Ingrese correo" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
             <section className="form-section">
                 <div>
-                    <label>Contraseña</label>
-                    <input placeholder="Ingrese contraseña" value={formData.password} type="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                    <label>Nombres</label>
+                    <input placeholder="Ingrese nombres" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                 </div>
-                <div>
-                    <label>Repetir Contraseña</label>
-                    <input placeholder="Repetir contraseña" value={formData.repeatPassword} type="password" onChange={(e) => setFormData({ ...formData, repeatPassword: e.target.value })} />
-                </div>
-            </section>
-            <section className="form-section">
-                <div>
-                    <label>Nombre</label>
-                    <input placeholder="Ingrese nombre" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
-                </div>
-                <div>
-                    <label>Segundo Nombre</label>
-                    <input placeholder="Ingrese segundo nombre" value={formData.secondName} onChange={(e) => setFormData({ ...formData, secondName: e.target.value })} />
-                </div>
-            </section>
-            <section className="form-section">
                 <div>
                     <label>Apellidos</label>
-                    <input placeholder="Ingrese apellidos" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+                    <input placeholder="Ingrese apellidos" value={formData.surName} onChange={(e) => setFormData({ ...formData, surName: e.target.value })} />
+                </div>
+            </section>
+            <section className="form-section">
+                <div>
+                    <label>Correo electrónico</label>
+                    <input placeholder="Ingrese correo" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div>
-                    <label>Rut</label>
-                    <input placeholder="Ingrese rut" value={formData.rutOrPassport} maxLength={9} onChange={(e) => setFormData({ ...formData, rutOrPassport: e.target.value })} />
+                    <label>Posición</label>
+                    <input placeholder="Ingrese posición" value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} />
                 </div>
             </section>
             <button className="send-button" type="submit" disabled={disabled}>Crear</button>
