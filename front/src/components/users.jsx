@@ -21,23 +21,23 @@ export const Users = ({ fetch, setFetch }) => {
   }, [fetch, setFetch]);
 
   return (
-    <section>
+    <section className="user-section">
       <h2>Listado de usuarios</h2>
       <ul>
         {userList.map((user) => {
           return (
             <li key={user.id}>
-              <div>
-                <span>
+              <div className="truncate">
+                <span className="text-white">
                   <b>
                     {user.firstName} {user.lastName}
                   </b>
                 </span>
               </div>
-              <div>
+              <div className="truncate">
                 <span className="text-gray-300 text-xs">{formatRut(user.rutOrPassport)}</span>
               </div>
-              <div>
+              <div className="truncate">
                 <span className="text-gray-300 text-xs">{user.email}</span>
               </div>
             </li>

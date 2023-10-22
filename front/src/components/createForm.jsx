@@ -38,18 +38,36 @@ export const CreateForm = ({ setFetch }) => {
         <form onSubmit={handleSubmit}>
             <label>Correo</label>
             <input placeholder="Ingrese correo" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-            <label>Contraseña</label>
-            <input placeholder="Ingrese contraseña" value={formData.password} type="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-            <label>Repetir Contraseña</label>
-            <input placeholder="Repetir contraseña" value={formData.repeatPassword} type="password" onChange={(e) => setFormData({ ...formData, repeatPassword: e.target.value })} />
-            <label>Nombre</label>
-            <input placeholder="Ingrese nombre" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
-            <label>Segundo Nombre</label>
-            <input placeholder="Ingrese segundo nombre" value={formData.secondName} onChange={(e) => setFormData({ ...formData, secondName: e.target.value })} />
-            <label>Apellidos</label>
-            <input placeholder="Ingrese apellidos" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
-            <label>Rut</label>
-            <input placeholder="Ingrese rut" value={formData.rutOrPassport} maxLength={9} onChange={(e) => setFormData({ ...formData, rutOrPassport: e.target.value })} />
+            <section className="form-section">
+                <div>
+                    <label>Contraseña</label>
+                    <input placeholder="Ingrese contraseña" value={formData.password} type="password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+                </div>
+                <div>
+                    <label>Repetir Contraseña</label>
+                    <input placeholder="Repetir contraseña" value={formData.repeatPassword} type="password" onChange={(e) => setFormData({ ...formData, repeatPassword: e.target.value })} />
+                </div>
+            </section>
+            <section className="form-section">
+                <div>
+                    <label>Nombre</label>
+                    <input placeholder="Ingrese nombre" value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
+                </div>
+                <div>
+                    <label>Segundo Nombre</label>
+                    <input placeholder="Ingrese segundo nombre" value={formData.secondName} onChange={(e) => setFormData({ ...formData, secondName: e.target.value })} />
+                </div>
+            </section>
+            <section className="form-section">
+                <div>
+                    <label>Apellidos</label>
+                    <input placeholder="Ingrese apellidos" value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
+                </div>
+                <div>
+                    <label>Rut</label>
+                    <input placeholder="Ingrese rut" value={formData.rutOrPassport} maxLength={9} onChange={(e) => setFormData({ ...formData, rutOrPassport: e.target.value })} />
+                </div>
+            </section>
             <button className="send-button" type="submit" disabled={disabled}>Crear</button>
         </form>
     )
