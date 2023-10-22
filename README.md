@@ -55,5 +55,5 @@ npm i
 Luego ejecutar el comando
 
 ```bash
-npm run start
+npm run start #Esto levantará por defecto un servidor local en localhost:3000
 ```
