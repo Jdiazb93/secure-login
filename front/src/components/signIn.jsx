@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from 'react-router-dom'
 import { signIn } from '../api/users'
+import { emailValidator } from '../utils/validator'
 import { toast } from 'react-toastify'
 
 export default function SignIn() {
@@ -8,6 +9,7 @@ export default function SignIn() {
         email: '',
         password: ''
     })
+    const [error, setError] = useState()
 
     const navigate = useNavigate()
 
@@ -18,6 +20,14 @@ export default function SignIn() {
             navigate('/users')
         }
     }, [token, navigate])
+
+    useEffect(() => {
+        if(credentials.email) {
+            const isValid = emailValidator(credentials.email)
+            if(!isValid) setError({ email: 'El correo no es válido.'})
+            if(isValid) setError()
+        }
+    }, [credentials])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -31,7 +41,7 @@ export default function SignIn() {
         }
     }
 
-    const disabled = !credentials.email || !credentials.password
+    const disabled = !credentials.email || !credentials.password || error
 
     return (
         <section className="h-[80vh] w-full items-center flex">
@@ -40,6 +50,7 @@ export default function SignIn() {
                 <form className="m-0 p-6 dark:border border-spacing-4 border-neutral-100" onSubmit={handleSubmit} >
                     <label className="text-xl mb-2">Email</label>
                     <input placeholder="email" value={credentials.email} onChange={(e) => setCredentials({...credentials, email: e.target.value})} />
+                    {error?.email && <span className="text-red-400">{error.email}</span>}
                     <label className="text-xl mb-2 mt-3">Contraseña</label>
                     <input placeholder="contraseña" type='password' value={credentials.password} onChange={(e) => setCredentials({...credentials, password: e.target.value})} />
                     <button className="send-button mt-3" disabled={disabled}>Ingresar</button>

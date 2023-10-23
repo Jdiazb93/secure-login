@@ -82,7 +82,5 @@ export const signIn = async (credentials) => {
 
     const auth = await response.json()
 
-    console.log(auth);
-
     return auth
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from 'react-router-dom'
 import { signUp } from '../api/users'
+import { emailValidator, minLength, formatRut } from '../utils/validator'
 import { toast } from 'react-toastify'
 
 export const CreateUser = () => {
@@ -9,6 +10,11 @@ export const CreateUser = () => {
         surName: '',
         email: '',
         rut: '',
+        password: '',
+        repeatPassword: ''
+    })
+    const [error, setError] = useState({
+        email: '',
         password: '',
         repeatPassword: ''
     })
@@ -23,6 +29,17 @@ export const CreateUser = () => {
         }
     }, [token, navigate])
 
+    useEffect(() => {
+        const isEmailValid = emailValidator(formData.email)
+        const isPasswordValid = minLength(formData.password, 7)
+        const isRepeatPasswordValid = minLength(formData.repeatPassword, 7)
+        setError({ 
+            email: !isEmailValid ?  'El correo no es válido.' : null,
+            password: !isPasswordValid ?  'La clave debe tener un largo mínimo de 8.' : null,
+            repeatPassword: !isRepeatPasswordValid ?  'La clave debe tener un largo mínimo de 8.' : null,
+        })
+    }, [formData])
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         const newSignUp = await signUp(formData)
@@ -33,8 +50,10 @@ export const CreateUser = () => {
             return toast.success(newSignUp.message)
         }
     }
+
+    const dataValues = Object.values(formData)
     
-    const disabled = !formData.email || !formData.name || !formData.surName || !formData.password || !formData.repeatPassword || !formData.rut
+    const disabled = dataValues.some((data) => data === '' || null) || error.email || error.password || error.repeatPassword
 
     return (
         <section className="h-[90vh] w-full items-center flex">
@@ -47,12 +66,15 @@ export const CreateUser = () => {
                     <input placeholder="Apellidos" value={formData.surName} onChange={(e) => setFormData({...formData, surName: e.target.value})} />
                     <label className="text-xl mb-2">Correo</label>
                     <input placeholder="Correo" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+                    {error?.email && <span className="text-red-400">{error.email}</span>}
                     <label className="text-xl mb-2">Rut</label>
-                    <input placeholder="Rut" value={formData.rut} maxLength={9} onChange={(e) => setFormData({...formData, rut: e.target.value})} />
+                    <input placeholder="Rut" value={formatRut(formData.rut)} maxLength={12} onChange={(e) => setFormData({...formData, rut: e.target.value.replace(/[^0-9Kk]/g, "")})} />
                     <label className="text-xl mb-2 mt-3">Contraseña</label>
                     <input placeholder="contraseña" type='password' value={formData.password} onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                    {error?.password && <span className="text-red-400">{error.password}</span>}
                     <label className="text-xl mb-2 mt-3">Repetir Contraseña</label>
                     <input placeholder="Repita contraseña" type='password' value={formData.repeatPassword} onChange={(e) => setFormData({...formData, repeatPassword: e.target.value})} />
+                    {error?.repeatPassword && <span className="text-red-400">{error.repeatPassword}</span>}
                     <button className="send-button mt-3" disabled={disabled}>Crear</button>
                     <span className="text-center mt-3">Ya tienes una cuenta?. <Link className="text-blue-400 underline" to="/">Ingresa acá</Link></span>
                 </form>
