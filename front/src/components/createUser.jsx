@@ -37,10 +37,10 @@ export const CreateUser = () => {
     const disabled = !formData.email || !formData.name || !formData.surName || !formData.password || !formData.repeatPassword || !formData.rut
 
     return (
-        <section className="h-screen w-full items-center flex">
-            <div className="container m-auto bg-slate-600 rounded-xl p-5 max-w-2xl">
-                <h2 className="text-center text-2xl font-bold">Registrate</h2>
-                <form className="m-0 p-6 border border-spacing-4 border-neutral-100" onSubmit={handleSubmit} >
+        <section className="h-[90vh] w-full items-center flex">
+            <div className="container m-auto bg-white dark:bg-slate-600 rounded-xl p-5 max-w-2xl">
+                <h2 className="text-center text-2xl font-bold duration-200">Registrate</h2>
+                <form className="m-0 p-6 dark:border border-spacing-4 border-neutral-100" onSubmit={handleSubmit} >
                     <label className="text-xl mb-2">Nombres</label>
                     <input placeholder="Nombres" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
                     <label className="text-xl mb-2">Apellidos</label>

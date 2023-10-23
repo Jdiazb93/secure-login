@@ -46,17 +46,17 @@ export const Users = ({ fetch, setFetch }) => {
           return (
             <li key={user.id}>
               <div className="truncate">
-                <span className="text-white">
+                <span className="dark:text-white">
                   <b>
                     {user.name} {user.surName}
                   </b>
                 </span>
               </div>
               <div className="truncate">
-                <span className="text-gray-300 text-md">{user.position}</span>
+                <span className="dark:text-gray-300 text-md">{user.position}</span>
               </div>
               <div className="truncate">
-                <span className="text-gray-300 text-xs">{user.email}</span>
+                <span className="dark:text-gray-300 text-xs">{user.email}</span>
               </div>
             </li>
           );

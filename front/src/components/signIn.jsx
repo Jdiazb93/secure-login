@@ -34,10 +34,10 @@ export default function SignIn() {
     const disabled = !credentials.email || !credentials.password
 
     return (
-        <section className="h-screen w-full items-center flex">
-            <div className="container m-auto bg-slate-600 rounded-xl p-5 max-w-2xl">
-                <h2 className="text-center text-2xl font-bold">Iniciar sesión</h2>
-                <form className="m-0 p-6 border border-spacing-4 border-neutral-100" onSubmit={handleSubmit} >
+        <section className="h-[80vh] w-full items-center flex">
+            <div className="container m-auto bg-white dark:bg-slate-600 rounded-xl p-5 max-w-2xl">
+                <h2 className="text-center text-2xl font-bold duration-200">Iniciar sesión</h2>
+                <form className="m-0 p-6 dark:border border-spacing-4 border-neutral-100" onSubmit={handleSubmit} >
                     <label className="text-xl mb-2">Email</label>
                     <input placeholder="email" value={credentials.email} onChange={(e) => setCredentials({...credentials, email: e.target.value})} />
                     <label className="text-xl mb-2 mt-3">Contraseña</label>

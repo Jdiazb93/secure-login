@@ -18,7 +18,7 @@ exports.validateToken = function (req, res, next) {
             return res.send({ status: 402, message: "El token ha expirado." });
         }
     } catch(e) {
-        console.error(e)
+        //console.error(e)
         return res.send({ status: 500, message: "Token inválido.", tokenStatus: false })
     }
     next()
