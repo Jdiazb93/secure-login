@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom'
+import { emailValidator } from '../utils/validator'
 import { createRelatedUser } from '../api/users'
 import { toast } from 'react-toastify'
 
@@ -10,6 +11,7 @@ export const CreateForm = ({ setFetch }) => {
         email: '',
         position: ''
     })
+    const [error, setError] = useState({ email: '' })
     const navigate = useNavigate()
 
     /**
@@ -52,6 +54,13 @@ export const CreateForm = ({ setFetch }) => {
         }
     }
 
+    useEffect(() => {
+        if(formData.email) {
+            const isEmailValid = emailValidator(formData.email)
+            setError({ email: !isEmailValid ?  'El correo no es válido.' : null })
+        }
+    }, [formData])
+
     //Se valida si los datos mínimos requeridos existen o no, para habilitar el botón de submit y prevenir errores.
     const disabled = !formData.name || !formData.surName || !formData.email
 
@@ -69,7 +78,7 @@ export const CreateForm = ({ setFetch }) => {
             </section>
             <section className="form-section">
                 <div>
-                    <label>Correo electrónico</label>
+                    <label>Correo electrónico {error?.email && <span className="text-red-400">{error.email}</span>}</label>
                     <input placeholder="Ingrese correo" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                 </div>
                 <div>
