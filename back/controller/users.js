@@ -3,6 +3,18 @@ const saltRounds = 10
 const { prisma } = require('../connection/connection')
 const jwt = require('../services/jwt')
 
+const checkToken = async (payload) => {
+    const userFounded = await prisma.users.findUnique({ where: { id: payload.id, email: payload.email } })
+
+    const payloadFromUser = await jwt.decodeToken(userFounded.lastToken)
+
+    if(payload.key === payloadFromUser.key && payload.exp === payloadFromUser.exp) {
+        return true
+    }
+
+    return false
+}
+
 const checkEmail = async (email) => {
     try {
         const userFounded = await prisma.users.findFirst({ where: { email: email } })
@@ -17,7 +29,9 @@ const signInFromSignUp = async (email) => {
     try {
         const userFounded = await prisma.users.findFirst({ where: { email: email.toLowerCase() } })
 
-        return {token: jwt.createToken(userFounded)}
+        const token = await jwt.createToken(userFounded)
+
+        return {token: token}
     } catch(e) {
         console.error(e)
         return false
@@ -31,6 +45,10 @@ const createUser = async (req, res) => {
     try {
         //Validación de datos importantes.
         if(!name || !surName || !email) return res.send({ status: 400, message: "Faltan datos para crear el usuario." })
+
+        const isValid = await checkToken(req.user)
+
+        if(!isValid) return res.send({ status: 500, message: "Token inválido." })
 
         const data = { name, surName, email, position }
 
@@ -92,6 +110,10 @@ const listRelatedUsers = async (req, res) => {
     try {
         const users = await prisma.usersRelated.findMany()
 
+        const isValid = await checkToken(req.user)
+
+        if(!isValid) return res.send({ status: 500, message: "Token inválido." })
+
         res.send({ status: 200, message: "Listado de usuarios.", data: users })
     } catch(e) {
         console.error(e)
@@ -122,7 +144,7 @@ const signIn = async (req, res) => {
 
         if(userFounded) {
             //Cuándo el usuario es encontrado, se hace la comparación entre la contraseña entregada y el hash.
-            bcrypt.compare(password, userFounded.password, (err, valid) => {
+            bcrypt.compare(password, userFounded.password, async (err, valid) => {
                 //Caso de error, se entregará un log completo en el servidor.
                 if(err) {
                     console.error(err)
@@ -132,7 +154,8 @@ const signIn = async (req, res) => {
                 if(!valid) return res.send({ status: 400, message: "Error en credenciales." })
 
                 //Si todo va bien, se responde con un nuevo token al front.
-                res.send({ status: 200, message: "Login exitoso.", data: {token: jwt.createToken(userFounded)} })
+                const token = await jwt.createToken(userFounded)
+                res.send({ status: 200, message: "Login exitoso.", data: {token: token} })
             })
         }
         if(!userFounded) return res.send({ status: 400, message: "Error en credenciales." })
