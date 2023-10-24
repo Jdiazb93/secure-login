@@ -57,9 +57,9 @@ const createUser = async (req, res) => {
 
         const isEmail = await emailValidator(email)
 
-        if(!isEmail) return res.send({ status: 400, message: "Email no valido." })
+        if(!isEmail) return res.send({ status: 400, message: "Email no valido.", tokenStatus: true })
 
-        const data = { name, surName, email, position }
+        const data = { name, surName, email, position, relatedId: req.user.id }
 
         //Creación del nuevo usuario.
         const newUser = await prisma.usersRelated.create({ data: data })
@@ -125,7 +125,7 @@ const signUp = async (req, res) => {
 
 const listRelatedUsers = async (req, res) => {
     try {
-        const users = await prisma.usersRelated.findMany()
+        const users = await prisma.usersRelated.findMany({ where: { relatedId: req.user.id } })
 
         const isValid = await checkToken(req.user)
 

@@ -28,6 +28,7 @@ model UsersRelated {
   surName String?
   email String
   position String
+  relatedId Int
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
