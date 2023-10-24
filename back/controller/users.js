@@ -3,8 +3,12 @@ const saltRounds = 10
 const { prisma } = require('../connection/connection')
 const jwt = require('../services/jwt')
 
+
+//función de validación adicional a JWT.
 const checkToken = async (payload) => {
     const userFounded = await prisma.users.findUnique({ where: { id: payload.id, email: payload.email } })
+
+    if(!userFounded) return false
 
     const payloadFromUser = await jwt.decodeToken(userFounded.lastToken)
 
