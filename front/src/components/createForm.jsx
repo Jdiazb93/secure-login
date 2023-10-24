@@ -25,7 +25,7 @@ export const CreateForm = ({ setFetch }) => {
         //Se hace petición mediante fetch
         const newUser = await createRelatedUser(formData, token);
         //Si existe un error, entregará un toast de error.
-        if(newUser.status !== 200) toast.error('Algo salió mal, inténtalo nuevamente!.')
+        if(newUser.status !== 200) toast.error(newUser.message)
         /**
          * Si el token está vencido, será removido de la memoria local.
          * Además, se redireccionará al login para volver a iniciar sesión.
@@ -49,7 +49,7 @@ export const CreateForm = ({ setFetch }) => {
                 email: '',
                 position: ''
             })
-            toast.success('Usuario creado con éxito!.')
+            toast.success(newUser.message)
             setFetch(true)
         }
     }
@@ -62,7 +62,7 @@ export const CreateForm = ({ setFetch }) => {
     }, [formData])
 
     //Se valida si los datos mínimos requeridos existen o no, para habilitar el botón de submit y prevenir errores.
-    const disabled = !formData.name || !formData.surName || !formData.email
+    const disabled = !formData.name || !formData.surName || !formData.email || error.email
 
     return (
         <form onSubmit={handleSubmit}>
