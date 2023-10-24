@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const saltRounds = 10
 const { prisma } = require('../connection/connection')
 const jwt = require('../services/jwt')
+const { emailValidator, cleanRUT } = require('../utils/validator')
 
 
 //función de validación adicional a JWT.
@@ -54,6 +55,10 @@ const createUser = async (req, res) => {
 
         if(!isValid) return res.send({ status: 500, message: "Token inválido." })
 
+        const isEmail = await emailValidator(email)
+
+        if(!isEmail) return res.send({ status: 400, message: "Email no valido." })
+
         const data = { name, surName, email, position }
 
         //Creación del nuevo usuario.
@@ -79,6 +84,10 @@ const signUp = async (req, res) => {
         //Se validan datos requeridos para generar un nuevo usuario.
         if(!name || !surName || !email || !password || !repeatPassword || !rut) return res.send({ status: 400, message: "Faltan datos para crear el usuario." }) 
 
+        const isEmail = await emailValidator(email)
+
+        if(!isEmail) return res.send({ status: 400, message: "Email no valido." })
+
         //Se valida password
         if(password !== repeatPassword) return res.send({ status: 400, message: "Las contraseñas deben ser iguales." })
 
@@ -87,8 +96,12 @@ const signUp = async (req, res) => {
             if(err) return res.send({ status: 400, message: "Error al encriptar la contraseña, intentelo nuevamente." })
             if(hash) {
 
+                const rutWithNumbers = cleanRUT(rut)
+
+                if(!rutWithNumbers) return res.send({ status: 400, message: "Error en el rut." })
+
                 //Se ordena la data del usuario a crear.
-                const data = { name, surName, email, password: hash, rut }
+                const data = { name, surName, email, password: hash, rut: rutWithNumbers }
 
                 //Se valida que el usuario no exista.
                 const userExist = await checkEmail(email)
@@ -142,6 +155,10 @@ const signIn = async (req, res) => {
     try {
         //Se valida que exista un correo y contraseña.
         if(!email || !password) return res.send({ status: 400, message: "Faltan datos." })
+
+        const isEmail = await emailValidator(email)
+
+        if(!isEmail) return res.send({ status: 400, message: "Email no valido." })
 
         //Se busca el usuario por correo.
         const userFounded = await prisma.users.findFirst({ where: { email: email.toLowerCase() } })
