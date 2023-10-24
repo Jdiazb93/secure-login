@@ -14,9 +14,9 @@ export const CreateUser = () => {
         repeatPassword: ''
     })
     const [error, setError] = useState({
-        email: '',
-        password: '',
-        repeatPassword: ''
+        email: null,
+        password: null,
+        repeatPassword: null
     })
 
     const navigate = useNavigate()
@@ -30,13 +30,22 @@ export const CreateUser = () => {
     }, [token, navigate])
 
     useEffect(() => {
-        const isEmailValid = emailValidator(formData.email)
-        const isPasswordValid = minLength(formData.password, 7)
-        const isRepeatPasswordValid = minLength(formData.repeatPassword, 7)
-        setError({ 
+        let isEmailValid = true
+        let isPasswordValid = true
+        let isRepeatPasswordValid = true
+        if(formData.email){
+            isEmailValid = emailValidator(formData.email)
+        }
+        if(formData.password) {
+            isPasswordValid = minLength(formData.password, 7)
+        }
+        if(formData.repeatPassword) {
+            isRepeatPasswordValid = minLength(formData.repeatPassword, 7)
+        }
+        setError({
             email: !isEmailValid ?  'El correo no es válido.' : null,
             password: !isPasswordValid ?  'La clave debe tener un largo mínimo de 8.' : null,
-            repeatPassword: !isRepeatPasswordValid ?  'La clave debe tener un largo mínimo de 8.' : null,
+            repeatPassword: !isRepeatPasswordValid ?  'La clave debe tener un largo mínimo de 8.' : null
         })
     }, [formData])
 
